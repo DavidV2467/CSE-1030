@@ -11,6 +11,12 @@ const double _minBalancePersonal = 1000.00;
 const int _accountNumberLength = 6;
 const int _maxTrasaction = 20;
 
+enum accType
+{
+    Business,
+    Personal
+};
+
 string getName()
 {
     string accountName;
@@ -45,7 +51,6 @@ string getName()
                 isValidName = true;
             }
         }
-
     } while (isValidName);
     return accountName;
 }
@@ -93,14 +98,8 @@ string encrypt_num(string accountNumber)
     return stringEncryptedAccNum;
 }
 
-void display_transactions(double transactions[2][_maxTrasaction], int numTrans,  accType myaccount, bool isSort)
+void display_transactions(double transactions[2][_maxTrasaction], int numTrans, accType myaccount, bool isSort)
 {
-    enum accType
-    {
-        Business,
-        Personal
-    };
-    accType myaccount;
     int userInputAccountType;
     char yesNo;
 
@@ -108,7 +107,7 @@ void display_transactions(double transactions[2][_maxTrasaction], int numTrans, 
     cin >> userInputAccountType;
     myaccount = accType(userInputAccountType);
     cout << "Do you want to sort? Y/N:" << endl;
-    cin >> yesNo;               
+    cin >> yesNo;
     if (tolower(yesNo) == 'y')
     {
         isSort = true;
@@ -130,12 +129,6 @@ void display_transactions(double transactions[2][_maxTrasaction], int numTrans, 
 
 void process_account(double transactions[][_maxTrasaction], int numBusinessTransactions, int numPersonalTransactions, double curBalanceBusiness, double curBalancePersonal)
 {
-
-    enum accType
-    {
-        Business,
-        Personal
-    };
     accType myaccount;
     int userInputAccountType;
     bool isNotValidNumber = false;
@@ -237,11 +230,6 @@ int main()
 
     double curBalanceBusiness = 10000.00;
     double curBalancePersonal = 1000.00;
-    enum accType
-    {
-        Business,
-        Personal
-    };
     accType myaccount;
     enum actions
     {
@@ -271,6 +259,7 @@ int main()
     int userInputAccountType;
     int numBusinessTransactions = 0;
     int numPersonalTransactions = 0;
+    int numTrans = 0;
     bool isValidName = false;
     bool isSort = false;
     bool isNotQuit = true;

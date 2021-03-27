@@ -11,6 +11,9 @@ const double _minBalancePersonal = 1000.00;
 const int _accountNumberLength = 6;
 const int _maxTrasaction = 20;
 
+int numBusinessTransactions = 0;
+int numPersonalTransactions = 0;
+
 enum accType
 {
     Business,
@@ -81,53 +84,81 @@ string getAccountNumber()
 string encrypt_num(string accountNumber)
 {
     srand(time(0));
-    int randomEncrypt = rand() % (300000 - 200001) + 200001;
-
+    int arrayofInt[6];
     int encryptedAccNum = 0;
-    //Generating encrypted account number
-    encryptedAccNum = randomEncrypt + stoi(accountNumber);
-    string stringEncryptedAccNum = to_string(encryptedAccNum);
-    // cout << "accountNumber: " << accountNumber << endl;
-    // cout << "randomEncrypt: " << randomEncrypt << endl;
-    // cout << "encryptedAccNum: " << encryptedAccNum << endl;
-    // cout << "stringEncryptedAccNum: " << stringEncryptedAccNum << endl;
-    if (stringEncryptedAccNum.length() > 6)
+    int i = 0;
+    string tempEncryptString;
+    string newEncryptedNum = "";
+
+    for (i = 0; i < 6; i++)
     {
-        stringEncryptedAccNum[0] = ' ';
+        arrayofInt[i] = (rand() % 10) + 10;
     }
-    return stringEncryptedAccNum;
+
+    for (i = 0; i < 6; i++)
+    {
+        tempEncryptString = accountNumber[i] + arrayofInt[i];
+        newEncryptedNum.append(tempEncryptString);
+    }
+    return newEncryptedNum;
 }
 
 void display_transactions(double transactions[2][_maxTrasaction], int numTrans, accType myaccount, bool isSort)
 {
-    int userInputAccountType;
-    char yesNo;
+    int i;
+    double temp;
+    double sortedArr[10];
+    //cout << "myaccount: " << myaccount << endl;
+    // for (i = 0; i <= numTrans; i++)
+    // {
+    //     cout << transactions[myaccount][i] << endl;
+    // }
 
-    cout << "Which account to display? 0 for Business, 1 for Personal:";
-    cin >> userInputAccountType;
-    myaccount = accType(userInputAccountType);
-    cout << "Do you want to sort? Y/N:" << endl;
-    cin >> yesNo;
-    if (tolower(yesNo) == 'y')
+    if (!isSort)
     {
-        isSort = true;
-    }
-    switch (myaccount)
-    {
-    case 0:
-        for (int i = 0; i <= _maxTrasaction; i++)
+        for (i = 0; i <= numTrans; i++)
         {
-            cout << transactions[0][i] << endl;
+            cout << transactions[myaccount][i] << endl;
         }
-    case 1:
-        for (int j = 0; j <= _maxTrasaction; j++)
+    }
+    else
+    {
+        //cout << " Num of Transaction: " << numTrans << endl;
+        for (i = 0; i < numTrans; ++i)
         {
-            cout << transactions[1][j] << endl;
+            sortedArr[i] = transactions[myaccount][i];
+            //cout << "sortedArr[i]: " << sortedArr[i] << endl;
+            //cout << "tranaction[i]: " << transactions[myaccount][i] << endl;
+        }
+        // [ 10, 1, 100, 200] b
+
+        // sort 1d array
+
+        for (i = 0; i <= numTrans; ++i)
+        {
+            for (int j = i + 1; j < numTrans; ++j)
+            {
+                if (sortedArr[j] > sortedArr[i])
+                {
+                    temp = sortedArr[i];
+                    sortedArr[i] = sortedArr[j];
+                    sortedArr[j] = temp;
+                    //cout << "sortedArr[i]" << sortedArr[i] << endl;
+                }
+            }
+        }
+        // sortedArr // [ 200, 100, 10, 1] a
+
+        //print sort arr
+        for (i = 0; i < numTrans; i++)
+        {
+            //cout << "sorted transactions: " << endl;
+            cout << sortedArr[i] << endl;
         }
     }
 }
 
-void process_account(double transactions[][_maxTrasaction], int numBusinessTransactions, int numPersonalTransactions, double curBalanceBusiness, double curBalancePersonal)
+void process_account(double transactions[][_maxTrasaction], int numBusinessTransactions_, int numPersonalTransactions_, double curBalanceBusiness, double curBalancePersonal)
 {
     accType myaccount;
     int userInputAccountType;
@@ -161,6 +192,7 @@ void process_account(double transactions[][_maxTrasaction], int numBusinessTrans
             }
             transactions[0][numBusinessTransactions] = userTransaction;
             numBusinessTransactions = numBusinessTransactions + 1;
+            cout << "num of transactions" << numBusinessTransactions << endl;
 
             cout << "Do you want to process another transaction? Y/N: ";
             cin >> yesNo;
@@ -197,6 +229,7 @@ void process_account(double transactions[][_maxTrasaction], int numBusinessTrans
                 cout << "Personal Balance:$" << curBalancePersonal << endl;
                 transactions[1][numPersonalTransactions] = userTransaction;
                 numPersonalTransactions = numPersonalTransactions + 1;
+                cout << "num of transactions" << numPersonalTransactions << endl;
             }
 
             cout << "Do you want to process another transaction? Y/N: ";
@@ -218,6 +251,35 @@ void process_account(double transactions[][_maxTrasaction], int numBusinessTrans
             cout << "Wrong choice. Please enter again: " << endl;
         }
     } while (isNotValidAccount);
+}
+
+void display_Account(double transactions[][_maxTrasaction], int numBusinessTransactions_, int numPersonalTransactions_)
+{
+    bool isSort = false;
+    char yesNo;
+    int userInputAccountType;
+    accType myaccount;
+
+    cout << "Which account to display? 0 for Business, 1 for Personal:";
+    cin >> userInputAccountType;
+    myaccount = accType(userInputAccountType);
+    cout << "Do you want to sort? Y/N:" << endl;
+    cin >> yesNo;
+    if (tolower(yesNo) == 'y')
+    {
+        isSort = true;
+    }
+    switch (myaccount)
+    {
+    case 0:
+        display_transactions(transactions, numBusinessTransactions, myaccount, isSort);
+    case 1:
+        display_transactions(transactions, numPersonalTransactions, myaccount, isSort);
+    }
+
+    //cout<<
+
+    //here lays switch-case block
 }
 
 int main()
@@ -257,11 +319,11 @@ int main()
 
     int userInputAction;
     int userInputAccountType;
-    int numBusinessTransactions = 0;
-    int numPersonalTransactions = 0;
+    // int numBusinessTransactions = 0;
+    // int numPersonalTransactions = 0;
     int numTrans = 0;
     bool isValidName = false;
-    bool isSort = false;
+
     bool isNotQuit = true;
 
     srand(time(0));
@@ -273,7 +335,11 @@ int main()
     //Asking user for account number.
     accountNumber = getAccountNumber();
 
+    //cout << "Account Number: " << accountNumber << endl;
+
     stringEncryptedAccNum = encrypt_num(accountNumber);
+
+    //cout << "Encrypted Account Number: " << stringEncryptedAccNum << endl;
 
     //Prompt user for action.
     do
@@ -291,8 +357,9 @@ int main()
             process_account(transactions, numBusinessTransactions, numPersonalTransactions, curBalanceBusiness, curBalancePersonal);
             break;
         case 2:
-            cout << "Display Account Information" << endl;
-            display_transactions(transactions, numTrans, myaccount, isSort);
+            cout << "Name:" << accountName << endl;
+            cout << "Account Number (Encrypted) : " << stringEncryptedAccNum << endl;
+            display_Account(transactions, numBusinessTransactions, numPersonalTransactions);
             break;
         case 3:
             cout << "Goodbye!!" << endl;
